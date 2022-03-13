@@ -58,9 +58,6 @@ public class UserController {
     @Autowired
     private FollowService followService;
 
-    @Autowired
-    private OssService ossService;
-
     @LoginRequired
     @RequestMapping(path = "/setting",method = RequestMethod.GET)
     public String getSettingPage(Model model){
