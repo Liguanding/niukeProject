@@ -40,8 +40,8 @@ public class CommentController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @RequestMapping(path = "/add/{discussPostId}",method = RequestMethod.POST)
-    public String addComment(@PathVariable("discussPostId") int discussPostId, Comment comment){
+    @RequestMapping(path = "/add/{discussPostId}", method = RequestMethod.POST)
+    public String addComment(@PathVariable("discussPostId") int discussPostId, Comment comment) {
         comment.setUserId(hostHolder.getUser().getId());
         comment.setStatus(0);
         comment.setCreateTime(new Date());
@@ -52,30 +52,29 @@ public class CommentController {
                 .setUserId(hostHolder.getUser().getId())
                 .setEntityId(comment.getEntityId())
                 .setEntityType(comment.getEntityType())
-                .setData("postId",discussPostId);
-        if(comment.getEntityType() == CommunityConstant.ENTITY_TYPE_POST){
+                .setData("postId", discussPostId);
+        if (comment.getEntityType() == CommunityConstant.ENTITY_TYPE_POST) {
             DiscussPost target = discussPostService.findDiscussPostById(comment.getEntityId());
             event.setEntityUserId(target.getUserId());
-        }else if(comment.getEntityType() == CommunityConstant.ENTITY_TYPE_COMMENT){
+        } else if (comment.getEntityType() == CommunityConstant.ENTITY_TYPE_COMMENT) {
             Comment target = commentService.findCommentById(comment.getEntityId());
             event.setEntityUserId(target.getUserId());
         }
         eventProducer.fireEvent(event);
 
-        //如果是评论帖子
-        if(comment.getEntityType() == CommunityConstant.ENTITY_TYPE_POST){
+        if (comment.getEntityType() == CommunityConstant.ENTITY_TYPE_POST) {
             //触发发帖事件
             event = new Event()
-                .setTopic(CommunityConstant.TOPIC_PUBLISH)
-                .setUserId(comment.getUserId())
-                .setEntityType(ENTITY_TYPE_POST)
-                .setEntityId(discussPostId);
+                    .setTopic(CommunityConstant.TOPIC_PUBLISH)
+                    .setUserId(comment.getUserId())
+                    .setEntityType(ENTITY_TYPE_POST)
+                    .setEntityId(discussPostId);
 
             eventProducer.fireEvent(event);
 
             //计算帖子分数
             String redisKey = RedisKeyUtil.getPostScoreKey();
-            redisTemplate.opsForSet().add(redisKey,discussPostId);
+            redisTemplate.opsForSet().add(redisKey, discussPostId);
         }
 
 

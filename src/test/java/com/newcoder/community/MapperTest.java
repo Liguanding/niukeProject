@@ -25,13 +25,13 @@ public class MapperTest {
     private LoginTicketMapper loginTicketMapper;
 
     @Test
-    public void testSelectuser(){
+    public void testSelectuser() {
         User user = userMapper.selectById(101);
         System.out.println(user);
     }
 
     @Test
-    public void testInsertLoginTicket(){
+    public void testInsertLoginTicket() {
         LoginTicket loginTicket = new LoginTicket();
         loginTicket.setUserId(101);
         loginTicket.setTicket("abc");
@@ -40,15 +40,15 @@ public class MapperTest {
 
         loginTicketMapper.insertLoginTicket(loginTicket);
         loginTicketMapper.selectByTicket("abc");
-        loginTicketMapper.updateStatus("abc",1);
+        loginTicketMapper.updateStatus("abc", 1);
     }
 
     @Test
-    public void testSelectLoginTicket(){
+    public void testSelectLoginTicket() {
         LoginTicket loginTicket = loginTicketMapper.selectByTicket("abc");
         System.out.println(loginTicket);
 
-        loginTicketMapper.updateStatus("abc",1);
+        loginTicketMapper.updateStatus("abc", 1);
     }
 
 }

@@ -48,13 +48,14 @@ public class DiscussPostController {
     @Autowired
     RedisTemplate redisTemplate;
 
-    @RequestMapping(path = "/add",method = RequestMethod.POST)
+    @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody
-    public String addDiscussPost(String title,String content){
+    public String addDiscussPost(String title, String content) {
         User user = hostHolder.getUser();
-        if(user == null){
-            return CommunityUtil.getJSONString(403,"你还没有登录!");
+        if (user == null) {
+            return CommunityUtil.getJSONString(403, "你还没有登录!");
         }
+
         DiscussPost post = new DiscussPost();
         post.setUserId(user.getId());
         post.setTitle(title);
@@ -73,13 +74,13 @@ public class DiscussPostController {
 
         //计算帖子分数
         String redisKey = RedisKeyUtil.getPostScoreKey();
-        redisTemplate.opsForSet().add(redisKey,post.getId());
+        redisTemplate.opsForSet().add(redisKey, post.getId());
 
-        return CommunityUtil.getJSONString(0,"发布成功!");
+        return CommunityUtil.getJSONString(0, "发布成功!");
     }
 
 
-    @RequestMapping(path = "/detail/{discussPostId}",method = RequestMethod.GET)
+    @RequestMapping(path = "/detail/{discussPostId}", method = RequestMethod.GET)
     public String getDiscussPost(@PathVariable("discussPostId") int discussPostId, Model model, Page page) {
         // 帖子
         DiscussPost post = discussPostService.findDiscussPostById(discussPostId);
@@ -88,11 +89,11 @@ public class DiscussPostController {
         User user = userService.findUserById(post.getUserId());
         model.addAttribute("user", user);
         //点赞
-        long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST,discussPostId);
-        model.addAttribute("likeCount",likeCount);
+        long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, discussPostId);
+        model.addAttribute("likeCount", likeCount);
         //点赞状态
-        int likeStatus = hostHolder.getUser() == null ? 0 : likeService.findEntityLikeStatus(hostHolder.getUser().getId(),ENTITY_TYPE_POST,discussPostId);
-        model.addAttribute("likeStatus",likeStatus);
+        int likeStatus = hostHolder.getUser() == null ? 0 : likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, discussPostId);
+        model.addAttribute("likeStatus", likeStatus);
 
         // 评论分页信息
         page.setLimit(5);
@@ -115,11 +116,11 @@ public class DiscussPostController {
                 // 作者
                 commentVo.put("user", userService.findUserById(comment.getUserId()));
                 //点赞
-                likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT,comment.getId());
-                commentVo.put("likeCount",likeCount);
+                likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT, comment.getId());
+                commentVo.put("likeCount", likeCount);
                 //点赞状态
-                likeStatus = hostHolder.getUser() == null ? 0 : likeService.findEntityLikeStatus(hostHolder.getUser().getId(),ENTITY_TYPE_COMMENT,comment.getId());
-                commentVo.put("likeStatus",likeStatus);
+                likeStatus = hostHolder.getUser() == null ? 0 : likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, comment.getId());
+                commentVo.put("likeStatus", likeStatus);
 
                 // 回复列表
                 List<Comment> replyList = commentService.findCommentsByEntity(
@@ -137,11 +138,11 @@ public class DiscussPostController {
                         User target = reply.getTargetId() == 0 ? null : userService.findUserById(reply.getTargetId());
                         replyVo.put("target", target);
                         //点赞
-                        likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT,reply.getId());
-                        replyVo.put("likeCount",likeCount);
+                        likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT, reply.getId());
+                        replyVo.put("likeCount", likeCount);
                         //点赞状态
-                        likeStatus = hostHolder.getUser() == null ? 0 : likeService.findEntityLikeStatus(hostHolder.getUser().getId(),ENTITY_TYPE_COMMENT,reply.getId());
-                        replyVo.put("likeStatus",likeStatus);
+                        likeStatus = hostHolder.getUser() == null ? 0 : likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, reply.getId());
+                        replyVo.put("likeStatus", likeStatus);
 
                         replyVoList.add(replyVo);
                     }
@@ -193,7 +194,7 @@ public class DiscussPostController {
         eventProducer.fireEvent(event);
         //计算帖子分数
         String redisKey = RedisKeyUtil.getPostScoreKey();
-        redisTemplate.opsForSet().add(redisKey,id);
+        redisTemplate.opsForSet().add(redisKey, id);
 
         return CommunityUtil.getJSONString(0);
     }
@@ -214,7 +215,6 @@ public class DiscussPostController {
 
         return CommunityUtil.getJSONString(0);
     }
-
 
 
 }

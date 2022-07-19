@@ -24,35 +24,35 @@ public class SensitiveFilter {
     private TrieNode rootNode = new TrieNode();
 
     @PostConstruct
-    public void init(){
+    public void init() {
         try (
                 InputStream is = this.getClass().getClassLoader().getResourceAsStream("sensitive-words.txt");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-        ){
+        ) {
             String keyword;
-            while((keyword = reader.readLine()) != null){
+            while ((keyword = reader.readLine()) != null) {
                 this.addKeyword(keyword);
             }
 
-        }catch (IOException e){
-            logger.error("加载敏感词文件失败： "+e.getMessage());
+        } catch (IOException e) {
+            logger.error("加载敏感词文件失败： " + e.getMessage());
         }
     }
 
     private void addKeyword(String keyword) {
         TrieNode tempNode = rootNode;
-        for(int i = 0;i < keyword.length();++i){
+        for (int i = 0; i < keyword.length(); ++i) {
             char c = keyword.charAt(i);
             TrieNode subNode = tempNode.getSubNode(c);
 
-            if(subNode == null){
+            if (subNode == null) {
                 subNode = new TrieNode();
-                tempNode.addSubNode(c,subNode);
+                tempNode.addSubNode(c, subNode);
             }
             tempNode = subNode;
 
-            if(i == keyword.length() - 1){
+            if (i == keyword.length() - 1) {
                 tempNode.setKeywordEnd(true);
             }
         }
@@ -61,6 +61,7 @@ public class SensitiveFilter {
 
     /**
      * 过滤敏感词
+     *
      * @param text 待过滤文本
      * @return 返回处理后的文本
      */
@@ -122,19 +123,17 @@ public class SensitiveFilter {
     }
 
     //判断是否为符号
-    private boolean isSymbol(Character c){
+    private boolean isSymbol(Character c) {
         return !CharUtils.isAsciiAlphanumeric(c) && (c < 0x2E80 || c > 0x9FFF);
     }
 
 
-
-
     //前缀树
-    private class TrieNode{
+    private class TrieNode {
         //叶子节点标识
         private boolean isKeywordEnd = false;
 
-        private Map<Character,TrieNode> subNodes = new HashMap<>();
+        private Map<Character, TrieNode> subNodes = new HashMap<>();
 
         public boolean isKeywordEnd() {
             return isKeywordEnd;
@@ -144,11 +143,11 @@ public class SensitiveFilter {
             isKeywordEnd = keywordEnd;
         }
 
-        public void addSubNode(Character c,TrieNode node){
-            subNodes.put(c,node);
+        public void addSubNode(Character c, TrieNode node) {
+            subNodes.put(c, node);
         }
 
-        public TrieNode getSubNode(Character c){
+        public TrieNode getSubNode(Character c) {
             return subNodes.get(c);
         }
 

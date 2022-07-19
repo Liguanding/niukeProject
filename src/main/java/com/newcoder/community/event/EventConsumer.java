@@ -41,14 +41,14 @@ public class EventConsumer implements CommunityConstant {
     private String wkImageStorage;
 
 
-    @KafkaListener(topics = {TOPIC_COMMENT,TOPIC_FOLLOW,TOPIC_LIKE})
-    public void handleCommentMessage(ConsumerRecord record){
-        if(record == null || record.value() == null){
+    @KafkaListener(topics = {TOPIC_COMMENT, TOPIC_FOLLOW, TOPIC_LIKE})
+    public void handleCommentMessage(ConsumerRecord record) {
+        if (record == null || record.value() == null) {
             logger.error("消息的内容为空!");
             return;
         }
-        Event event = JSONObject.parseObject(record.value().toString(),Event.class);
-        if(event == null){
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
             logger.error("消息格式错误!");
             return;
         }
@@ -59,31 +59,30 @@ public class EventConsumer implements CommunityConstant {
         message.setConversationId(event.getTopic());
         message.setCreateTime(new Date());
 
-        Map<String,Object> content = new HashMap<>();
-        content.put("userId",event.getUserId());
-        content.put("entityType",event.getEntityType());
-        content.put("entityId",event.getEntityId());
+        Map<String, Object> content = new HashMap<>();
+        content.put("userId", event.getUserId());
+        content.put("entityType", event.getEntityType());
+        content.put("entityId", event.getEntityId());
 
-        if(!event.getData().isEmpty()){
-            for(Map.Entry<String,Object> entry:event.getData().entrySet()){
+        if (!event.getData().isEmpty()) {
+            for (Map.Entry<String, Object> entry : event.getData().entrySet()) {
                 content.put(entry.getKey(), entry.getValue());
             }
         }
         message.setContent(JSONObject.toJSONString(content));
         messageService.addMessage(message);
-
     }
 
     @KafkaListener(topics = {TOPIC_PUBLISH})
-    public void handlePublishMessage(ConsumerRecord record){
-        if(record == null || record.value() == null){
+    public void handlePublishMessage(ConsumerRecord record) {
+        if (record == null || record.value() == null) {
             logger.error("消息的内容为空！");
             return;
         }
 
-        Event event = JSONObject.parseObject(record.value().toString(),Event.class);
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
 
-        if(event == null){
+        if (event == null) {
             logger.error("消息格式错误！");
             return;
         }

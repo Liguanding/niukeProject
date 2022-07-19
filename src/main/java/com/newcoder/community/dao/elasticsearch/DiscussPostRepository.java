@@ -18,6 +18,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DiscussPostRepository extends ElasticsearchRepository<DiscussPost,Integer> {
+public interface DiscussPostRepository extends ElasticsearchRepository<DiscussPost, Integer> {
 
 }

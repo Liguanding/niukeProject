@@ -10,10 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class DataService {
@@ -33,7 +30,6 @@ public class DataService {
         if (start == null || end == null) {
             throw new IllegalArgumentException("参数不能为空!");
         }
-
         // 整理该日期范围内的key
         List<String> keyList = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();

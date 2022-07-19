@@ -44,24 +44,24 @@ public class LoginController implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-    @RequestMapping(path = "/register",method = RequestMethod.GET)
-    public String getRegisterPage(){
+    @RequestMapping(path = "/register", method = RequestMethod.GET)
+    public String getRegisterPage() {
         return "/site/register";
     }
 
-    @RequestMapping(path = "/login",method = RequestMethod.GET)
-    public String getLoginPage(){
+    @RequestMapping(path = "/login", method = RequestMethod.GET)
+    public String getLoginPage() {
         return "/site/login";
     }
 
-    @RequestMapping(path = "/register",method = RequestMethod.POST)
-    public String register(Model model, User user){
-        Map<String,Object> map = userService.register(user);
-        if(map == null || map.isEmpty()){
+    @RequestMapping(path = "/register", method = RequestMethod.POST)
+    public String register(Model model, User user) {
+        Map<String, Object> map = userService.register(user);
+        if (map == null || map.isEmpty()) {
             model.addAttribute("msg", "注册成功,我们已经向您的邮箱发送了一封激活邮件,请尽快激活!");
             model.addAttribute("target", "/index");
             return "/site/operate-result";
-        }else{
+        } else {
             model.addAttribute("usernameMsg", map.get("usernameMsg"));
             model.addAttribute("passwordMsg", map.get("passwordMsg"));
             model.addAttribute("emailMsg", map.get("emailMsg"));
@@ -69,24 +69,24 @@ public class LoginController implements CommunityConstant {
         }
     }
 
-    @RequestMapping(path = "/activation/{userId}/{code}",method = RequestMethod.GET)
-    public String activation(Model model, @PathVariable("userId") int userId,@PathVariable("code") String code){
-        int result = userService.activation(userId,code);
-        if(result == ACTIVATION_SUCCESS){
+    @RequestMapping(path = "/activation/{userId}/{code}", method = RequestMethod.GET)
+    public String activation(Model model, @PathVariable("userId") int userId, @PathVariable("code") String code) {
+        int result = userService.activation(userId, code);
+        if (result == ACTIVATION_SUCCESS) {
             model.addAttribute("msg", "激活成功,您的账号已经可以使用了!");
             model.addAttribute("target", "/login");
-        }else if(result == ACTIVATION_REPEAT){
+        } else if (result == ACTIVATION_REPEAT) {
             model.addAttribute("msg", "无效操作,该账号已经激活过了!");
             model.addAttribute("target", "/index");
-        }else{
+        } else {
             model.addAttribute("msg", "激活失败,您提供的激活码不正确!");
             model.addAttribute("target", "/index");
         }
         return "/site/operate-result";
     }
 
-    @RequestMapping(path = "/kaptcha",method = RequestMethod.GET)
-    public void getKaptcha(HttpServletResponse response, HttpSession session){
+    @RequestMapping(path = "/kaptcha", method = RequestMethod.GET)
+    public void getKaptcha(HttpServletResponse response, HttpSession session) {
         //生成验证码
         String text = kaptchaProducer.createText();
         BufferedImage image = kaptchaProducer.createImage(text);
@@ -96,106 +96,105 @@ public class LoginController implements CommunityConstant {
 
         //验证码存入redis中
         String kaptchaOwner = CommunityUtil.generateUUID();
-        Cookie cookie = new Cookie("kaptchaOwner",kaptchaOwner);
+        Cookie cookie = new Cookie("kaptchaOwner", kaptchaOwner);
         cookie.setMaxAge(60);
         cookie.setPath(contextPath);
         response.addCookie(cookie);
 
         String redisKey = RedisKeyUtil.getKaptchKey(kaptchaOwner);
-        redisTemplate.opsForValue().set(redisKey,text,60, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(redisKey, text, 60, TimeUnit.SECONDS);
 
 
         //图片输出给浏览器
         response.setContentType("image/png");
-        try{
+        try {
             OutputStream os = response.getOutputStream();
-            ImageIO.write(image,"png",os);
-        }catch (IOException e) {
+            ImageIO.write(image, "png", os);
+        } catch (IOException e) {
             logger.error("响应验证码失败：" + e.getMessage());
         }
     }
 
-    @RequestMapping(path = "/login",method = RequestMethod.POST)
-    public String login(String username,String password,String code,boolean rememberme,
-                        Model model,HttpSession session,HttpServletResponse response,@CookieValue("kaptchaOwner") String kaptchaOwner){
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    public String login(String username, String password, String code, boolean rememberme,
+                        Model model, HttpSession session, HttpServletResponse response, @CookieValue("kaptchaOwner") String kaptchaOwner) {
 //        String kaptcha = (String)session.getAttribute("kaptcha");
 
         String kaptcha = null;
-        if (StringUtils.isNotBlank(kaptchaOwner)){
+        if (StringUtils.isNotBlank(kaptchaOwner)) {
             String redisKey = RedisKeyUtil.getKaptchKey(kaptchaOwner);
             kaptcha = (String) redisTemplate.opsForValue().get(redisKey);
         }
 
-        if(StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)){
-            model.addAttribute("codeMsg","验证码不正确!");
+        if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
+            model.addAttribute("codeMsg", "验证码不正确!");
             return "/site/login";
         }
 
         //检查账号密码
         int expiredSeconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
-        Map<String,Object> map = userService.login(username,password,expiredSeconds);
-        if(map.containsKey("ticket")){
+        Map<String, Object> map = userService.login(username, password, expiredSeconds);
+        if (map.containsKey("ticket")) {
             Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
             cookie.setPath(contextPath);
             cookie.setMaxAge(expiredSeconds);
             response.addCookie(cookie);
             return "redirect:/index";
-        }else{
+        } else {
             model.addAttribute("usernameMsg", map.get("usernameMsg"));
             model.addAttribute("passwordMsg", map.get("passwordMsg"));
             return "/site/login";
         }
     }
 
-    @RequestMapping(path = "/logout",method = RequestMethod.GET)
-    public String logout(@CookieValue("ticket") String ticket){
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public String logout(@CookieValue("ticket") String ticket) {
         userService.logout(ticket);
         SecurityContextHolder.clearContext();
         return "redirect:/login";
     }
 
-    @RequestMapping(path = "/forget",method = RequestMethod.GET)
-    public String getForgetPage(){
+    @RequestMapping(path = "/forget", method = RequestMethod.GET)
+    public String getForgetPage() {
         return "/site/forget";
     }
 
     @ResponseBody
-    @RequestMapping(path = "/forget/getcode",method = RequestMethod.POST)
-    public Map<String,Object> getCode(String email,HttpSession session){
+    @RequestMapping(path = "/forget/getcode", method = RequestMethod.POST)
+    public Map<String, Object> getCode(String email, HttpSession session) {
 
-        Map<String,Object> map = new HashMap<>();
-        if(StringUtils.isBlank(email)){
+        Map<String, Object> map = new HashMap<>();
+        if (StringUtils.isBlank(email)) {
 //            model.addAttribute("emailMsg","请输入正确的邮箱地址！");
-            map.put("success",false);
-            map.put("emailMsg","请输入正确的邮箱地址!");
+            map.put("success", false);
+            map.put("emailMsg", "请输入正确的邮箱地址!");
         }
 
         Map<String, Object> map1 = userService.forget(email);
-        if(map1 == null || map1.size() == 0){
-            map.put("success",false);
-            map.put("emailMsg","请输入正确的邮箱地址!");
-        }else{
+        if (map1 == null || map1.size() == 0) {
+            map.put("success", false);
+            map.put("emailMsg", "请输入正确的邮箱地址!");
+        } else {
             String code = (String) map1.get("code");
-            map.put("success",true);
-            session.setAttribute("code",code);
+            map.put("success", true);
+            session.setAttribute("code", code);
         }
         return map;
     }
 
-    @RequestMapping(path = "/reset",method = RequestMethod.POST)
-    public String reset(Model model,String email,String verifycode,String newPassword,HttpSession session){
-        if(StringUtils.isBlank(newPassword)){
-            model.addAttribute("passwordMsg","请输入新密码！");
+    @RequestMapping(path = "/reset", method = RequestMethod.POST)
+    public String reset(Model model, String email, String verifycode, String newPassword, HttpSession session) {
+        if (StringUtils.isBlank(newPassword)) {
+            model.addAttribute("passwordMsg", "请输入新密码！");
             return "/site/forget";
         }
-        if(!verifycode.equals((String) session.getAttribute("code"))){
-            model.addAttribute("codeMsg","验证码不正确！");
+        if (!verifycode.equals((String) session.getAttribute("code"))) {
+            model.addAttribute("codeMsg", "验证码不正确！");
             return "/site/forget";
-        }else{
-            userService.resetPassword(email,newPassword);
+        } else {
+            userService.resetPassword(email, newPassword);
             return "redirect:/login";
         }
-
     }
 
 }

@@ -1,25 +1,25 @@
-$(function(){
+$(function () {
     $("#topBtn").click(setTop);
     $("#wonderfulBtn").click(setWonderful);
     $("#deleteBtn").click(setDelete);
 });
 
-function like(btn,entityType,entityId,entityUserId,postId){
+function like(btn, entityType, entityId, entityUserId, postId) {
     $.ajax({
-        url:CONTEXT_PATH + "/like",
-        type:"post",
-        dataType:"json",
-        data:{
-            "entityType":entityType,
-            "entityId":entityId,
-            "entityUserId":entityUserId,
-            "postId":postId
+        url: CONTEXT_PATH + "/like",
+        type: "post",
+        dataType: "json",
+        data: {
+            "entityType": entityType,
+            "entityId": entityId,
+            "entityUserId": entityUserId,
+            "postId": postId
         },
-        success:function (data){
-            if(data.code == 0){
+        success: function (data) {
+            if (data.code == 0) {
                 $(btn).children("i").text(data.likeCount);
-                $(btn).children("b").text(data.likeStatus==1?'已赞':"赞");
-            }else {
+                $(btn).children("b").text(data.likeStatus == 1 ? '已赞' : "赞");
+            } else {
                 alert(data.msg);
             }
         }
@@ -30,16 +30,16 @@ function like(btn,entityType,entityId,entityUserId,postId){
 function setTop() {
 
     $.ajax({
-        url:CONTEXT_PATH + "/discuss/top",
-        type:"post",
-        dataType:"json",
-        data:{
-            "id":$("#postId").val()
+        url: CONTEXT_PATH + "/discuss/top",
+        type: "post",
+        dataType: "json",
+        data: {
+            "id": $("#postId").val()
         },
-        success:function (data){
-            if(data.code == 0){
+        success: function (data) {
+            if (data.code == 0) {
                 $("#topBtn").attr("disabled", "disabled");
-            }else {
+            } else {
                 alert(data.msg);
             }
         }
@@ -49,16 +49,16 @@ function setTop() {
 // 加精
 function setWonderful() {
     $.ajax({
-        url:CONTEXT_PATH + "/discuss/wonderful",
-        type:"post",
-        dataType:"json",
-        data:{
-            "id":$("#postId").val()
+        url: CONTEXT_PATH + "/discuss/wonderful",
+        type: "post",
+        dataType: "json",
+        data: {
+            "id": $("#postId").val()
         },
-        success:function (data){
-            if(data.code == 0){
+        success: function (data) {
+            if (data.code == 0) {
                 $("#wonderfulBtn").attr("disabled", "disabled");
-            }else {
+            } else {
                 alert(data.msg);
             }
         }
@@ -69,16 +69,16 @@ function setWonderful() {
 function setDelete() {
 
     $.ajax({
-        url:CONTEXT_PATH + "/discuss/delete",
-        type:"post",
-        dataType:"json",
-        data:{
-            "id":$("#postId").val()
+        url: CONTEXT_PATH + "/discuss/delete",
+        type: "post",
+        dataType: "json",
+        data: {
+            "id": $("#postId").val()
         },
-        success:function (data){
-            if(data.code == 0){
+        success: function (data) {
+            if (data.code == 0) {
                 location.href = CONTEXT_PATH + "/index";
-            }else {
+            } else {
                 alert(data.msg);
             }
         }

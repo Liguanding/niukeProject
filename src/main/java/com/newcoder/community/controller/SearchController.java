@@ -29,28 +29,28 @@ public class SearchController {
     @Autowired
     private LikeService likeService;
 
-    @RequestMapping(path = "/search",method = RequestMethod.GET)
-    public String search(String keyword, Page page, Model model){
+    @RequestMapping(path = "/search", method = RequestMethod.GET)
+    public String search(String keyword, Page page, Model model) {
         org.springframework.data.domain.Page<DiscussPost> searchResult =
                 elasticsearchService.searchDiscussPost(keyword, page.getCurrent() - 1, page.getLimit());
         //聚合数据
-        List<Map<String,Object>> discussPost = new ArrayList<>();
-        if(searchResult != null){
-            for(DiscussPost post : searchResult){
-                Map<String,Object> map = new HashMap<>();
+        List<Map<String, Object>> discussPost = new ArrayList<>();
+        if (searchResult != null) {
+            for (DiscussPost post : searchResult) {
+                Map<String, Object> map = new HashMap<>();
                 //帖子
-                map.put("post",post);
+                map.put("post", post);
                 //作者
-                map.put("user",userService.findUserById(post.getUserId()));
+                map.put("user", userService.findUserById(post.getUserId()));
                 //点赞数量
-                map.put("likeCount",likeService.findEntityLikeCount(CommunityConstant.ENTITY_TYPE_POST,post.getId()));
+                map.put("likeCount", likeService.findEntityLikeCount(CommunityConstant.ENTITY_TYPE_POST, post.getId()));
                 discussPost.add(map);
             }
         }
-        model.addAttribute("discussPost",discussPost);
-        model.addAttribute("keyword",keyword);
+        model.addAttribute("discussPost", discussPost);
+        model.addAttribute("keyword", keyword);
         page.setPath("/search?keyword=" + keyword);
-        page.setRows(searchResult == null ? 0 : (int)searchResult.getTotalElements());
+        page.setRows(searchResult == null ? 0 : (int) searchResult.getTotalElements());
         return "/site/search";
     }
 

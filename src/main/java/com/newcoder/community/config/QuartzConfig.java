@@ -12,7 +12,6 @@ import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 public class QuartzConfig {
 
 
-
     // FactoryBean可简化Bean的实例化过程:
     // 1.通过FactoryBean封装Bean的实例化过程.
     // 2.将FactoryBean装配到Spring容器里.
@@ -21,7 +20,7 @@ public class QuartzConfig {
 
     // 配置JobDetail
     @Bean
-    public JobDetailFactoryBean postRefreshJobDetail(){
+    public JobDetailFactoryBean postRefreshJobDetail() {
         JobDetailFactoryBean factoryBean = new JobDetailFactoryBean();
         factoryBean.setJobClass(PostScoreRefreshJob.class);
         factoryBean.setBeanName("postScoreRefreshJob");
@@ -32,7 +31,7 @@ public class QuartzConfig {
     }
 
     @Bean
-    public SimpleTriggerFactoryBean postScoreRefreshTrigger(JobDetail postScoreRefreshJobDetail){
+    public SimpleTriggerFactoryBean postScoreRefreshTrigger(JobDetail postScoreRefreshJobDetail) {
         SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();
         factoryBean.setJobDetail(postScoreRefreshJobDetail);
         factoryBean.setBeanName("postScoreRefreshTrigger");

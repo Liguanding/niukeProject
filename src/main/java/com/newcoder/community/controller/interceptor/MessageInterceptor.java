@@ -23,10 +23,10 @@ public class MessageInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         User user = hostHolder.getUser();
-        if(user != null && modelAndView != null){
+        if (user != null && modelAndView != null) {
             int letterUnreadCount = messageService.findLetterUnreadCount(user.getId(), null);
             int noticeUnreadcount = messageService.findNoticeUnreadCount(user.getId(), null);
-            modelAndView.addObject("allUnreadCount",letterUnreadCount+noticeUnreadcount);
+            modelAndView.addObject("allUnreadCount", letterUnreadCount + noticeUnreadcount);
         }
     }
 }

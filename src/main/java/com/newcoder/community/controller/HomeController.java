@@ -32,35 +32,35 @@ public class HomeController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
 
-    @RequestMapping(path = "/index",method = RequestMethod.GET)
-    public String getIndexPage(Model model, Page page, @RequestParam(name = "orderMode",defaultValue = "0") int orderMode){
+    @RequestMapping(path = "/index", method = RequestMethod.GET)
+    public String getIndexPage(Model model, Page page, @RequestParam(name = "orderMode", defaultValue = "0") int orderMode) {
         page.setRows(discussPostService.findDiscussPostRows(0));
         page.setPath("/index?orderMode=" + orderMode);
 
-        List<DiscussPost> list = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit(),orderMode);
+        List<DiscussPost> list = discussPostService.findDiscussPosts(0, page.getOffset(), page.getLimit(), orderMode);
 
-        List<Map<String,Object>> discussPosts = new ArrayList<>();
-        if(list != null){
+        List<Map<String, Object>> discussPosts = new ArrayList<>();
+        if (list != null) {
             for (DiscussPost post : list) {
-                Map<String,Object> map = new HashMap<>();
-                map.put("post",post);
+                Map<String, Object> map = new HashMap<>();
+                map.put("post", post);
                 User user = userService.findUserById(post.getUserId());
-                map.put("user",user);
+                map.put("user", user);
 
                 long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
-                map.put("likeCount",likeCount);
+                map.put("likeCount", likeCount);
 
                 discussPosts.add(map);
             }
         }
 
-        model.addAttribute("discussPosts",discussPosts);
-        model.addAttribute("orderMode",orderMode);
+        model.addAttribute("discussPosts", discussPosts);
+        model.addAttribute("orderMode", orderMode);
         return "/index";
     }
 
-    @RequestMapping(path = "/error",method = RequestMethod.GET)
-    public String getErrorPage(){
+    @RequestMapping(path = "/error", method = RequestMethod.GET)
+    public String getErrorPage() {
         return "/error/500";
     }
 

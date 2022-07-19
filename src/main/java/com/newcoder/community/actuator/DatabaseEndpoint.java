@@ -24,14 +24,14 @@ public class DatabaseEndpoint {
     private DataSource dataSource;
 
     @ReadOperation
-    public String checkConnection(){
-        try(
+    public String checkConnection() {
+        try (
                 Connection conn = dataSource.getConnection();
-                ){
-            return CommunityUtil.getJSONString(0,"获取链接成功");
-        }catch (SQLException e){
+        ) {
+            return CommunityUtil.getJSONString(0, "获取链接成功");
+        } catch (SQLException e) {
             logger.error("获取连接失败:" + e.getMessage());
-            return CommunityUtil.getJSONString(1,"获取连接失败");
+            return CommunityUtil.getJSONString(1, "获取连接失败");
         }
     }
 }

@@ -17,10 +17,10 @@ public class WKConfig {
     private String wkImageStorage;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         //创建图片目录
         File file = new File(wkImageStorage);
-        if(!file.exists()){
+        if (!file.exists()) {
             file.mkdir();
             logger.info("创建wk图片目录: " + wkImageStorage);
         }

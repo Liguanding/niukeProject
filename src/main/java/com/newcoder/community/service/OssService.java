@@ -20,7 +20,7 @@ public class OssService {
         String accessKeySecret = ConstantPropertiesUtils.ACCESS_KEY_SECRET;
         String bucketName = ConstantPropertiesUtils.HEADER_BUCKET_NAME;
         String headerBucketUrl = ConstantPropertiesUtils.HEADERBUCKETURL;
-        try{
+        try {
             //判断oss实例是否存在：如果不存在则创建，如果存在则获取
             OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
 
@@ -38,10 +38,10 @@ public class OssService {
             // 2把文件按照日期进行分类
             // 获取当前日期
             String datePath = new DateTime().toString("yyyy/MM/dd");
-            fileName=datePath+"/"+fileName;
+            fileName = datePath + "/" + fileName;
 
             //调用oss方法实现上传
-            ossClient.putObject(bucketName,fileName,inputStream);
+            ossClient.putObject(bucketName, fileName, inputStream);
 
             //关闭OSSClient
             ossClient.shutdown();
@@ -53,7 +53,7 @@ public class OssService {
             String headerUrl = "https://" + bucketName + "." + endPoint + "/" + fileName;
             return headerUrl;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

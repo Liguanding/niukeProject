@@ -28,21 +28,21 @@ public class ElasticsearchService {
     @Autowired
     private ElasticsearchRestTemplate restTemplate;
 
-    public void saveDiscussPost(DiscussPost post){
+    public void saveDiscussPost(DiscussPost post) {
         discussPostRepository.save(post);
     }
 
-    public void deleteDiscussPost(int id){
+    public void deleteDiscussPost(int id) {
         discussPostRepository.deleteById(id);
     }
 
-    public Page<DiscussPost> searchDiscussPost(String keyWord,int current,int limit){
+    public Page<DiscussPost> searchDiscussPost(String keyWord, int current, int limit) {
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery(keyWord,"title","content"))
+                .withQuery(QueryBuilders.multiMatchQuery(keyWord, "title", "content"))
                 .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))
-                .withPageable(PageRequest.of(current,10))
+                .withPageable(PageRequest.of(current, 10))
                 .withHighlightFields(
                         new HighlightBuilder.Field("title").preTags("<em>").postTags("</em>"),
                         new HighlightBuilder.Field("content").preTags("<em>").postTags("</em>")
@@ -52,22 +52,22 @@ public class ElasticsearchService {
         List<DiscussPost> searchProductList = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
 
         List<DiscussPost> list = new ArrayList<>();
-        for(SearchHit post : searchHits){
+        for (SearchHit post : searchHits) {
             List<String> titles = post.getHighlightField("title");
             List<String> contents = post.getHighlightField("content");
 
             DiscussPost discussPost = (DiscussPost) post.getContent();
-            if(titles != null && !titles.isEmpty()){
+            if (titles != null && !titles.isEmpty()) {
                 discussPost.setTitle(titles.get(0));
             }
 
-            if(contents != null && !contents.isEmpty()){
+            if (contents != null && !contents.isEmpty()) {
                 discussPost.setContent(contents.get(0));
             }
             list.add(discussPost);
         }
 
-        Page<DiscussPost> page = new PageImpl<DiscussPost>(list,searchQuery.getPageable(),searchHits.getTotalHits());
+        Page<DiscussPost> page = new PageImpl<DiscussPost>(list, searchQuery.getPageable(), searchHits.getTotalHits());
 
         return page;
 

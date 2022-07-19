@@ -11,25 +11,26 @@ import java.util.UUID;
 public class CommunityUtil {
 
     //生成随机字符串
-    public static String generateUUID(){
-        return UUID.randomUUID().toString().replaceAll("-","");
+    public static String generateUUID() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
+
     //md5加密
-    public static String md5(String key){
-        if(StringUtils.isBlank(key)){
+    public static String md5(String key) {
+        if (StringUtils.isBlank(key)) {
             return null;
         }
         return DigestUtils.md5DigestAsHex(key.getBytes());
     }
 
-    public static String getJSONString(int code, String msg, Map<String, Object> map){
+    public static String getJSONString(int code, String msg, Map<String, Object> map) {
         JSONObject json = new JSONObject();
-        json.put("code",code);
-        json.put("msg",msg);
+        json.put("code", code);
+        json.put("msg", msg);
 
-        if(map != null){
-            for(String key : map.keySet()){
-                json.put(key,map.get(key));
+        if (map != null) {
+            for (String key : map.keySet()) {
+                json.put(key, map.get(key));
             }
         }
         return json.toJSONString();
@@ -43,7 +44,7 @@ public class CommunityUtil {
         return getJSONString(code, null, null);
     }
 
-//    Json函数测试
+    //    Json函数测试
     public static void main(String[] args) {
         Map<String, Object> map = new HashMap<>();
         map.put("name", "zhangsan");

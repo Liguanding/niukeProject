@@ -1,5 +1,7 @@
 package com.newcoder.community.entity;
 
+import org.springframework.context.annotation.Configuration;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +12,7 @@ public class Event {
     private int entityType;
     private int entityId;
     private int entityUserId;
-    private Map<String,Object> data = new HashMap<>();
+    private Map<String, Object> data = new HashMap<>();
 
     public String getTopic() {
         return topic;
@@ -61,8 +63,8 @@ public class Event {
         return data;
     }
 
-    public Event setData(String key,Object value) {
-        this.data.put(key,value);
+    public Event setData(String key, Object value) {
+        this.data.put(key, value);
         return this;
     }
 }

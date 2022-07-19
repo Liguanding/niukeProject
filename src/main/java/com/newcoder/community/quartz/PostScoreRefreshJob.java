@@ -23,11 +23,12 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(PostScoreRefreshJob.class);
     private static final Date epoch;
+
     static {
         try {
             epoch = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2014-08-01 00:00:00");
         } catch (ParseException e) {
-           throw new RuntimeException("初始化牛客纪元失败!",e);
+            throw new RuntimeException("初始化牛客纪元失败!", e);
         }
     }
 
@@ -49,20 +50,21 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
         String redisKey = RedisKeyUtil.getPostScoreKey();
         BoundSetOperations operations = redisTemplate.boundSetOps(redisKey);
 
-        if(operations.size() == 0){
+        if (operations.size() == 0) {
             logger.info("[任务取消] 没有任何刷新的操作");
+            return;
         }
         logger.info("[任务开始 正在刷新帖子分数: " + operations.size());
-        while(operations.size()>0){
+        while (operations.size() > 0) {
             this.refresh((Integer) operations.pop());
         }
         logger.info("[任务结束]" + "帖子分数刷新完毕");
     }
 
-    private void refresh(int postId){
+    private void refresh(int postId) {
         DiscussPost post = discussPostService.findDiscussPostById(postId);
 
-        if(post == null){
+        if (post == null) {
             logger.error("该帖子不存在: id = " + postId);
         }
         // 是否精华

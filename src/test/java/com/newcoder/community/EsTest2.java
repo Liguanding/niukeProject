@@ -19,12 +19,12 @@ public class EsTest2 {
     ElasticsearchService esService;
 
     @Test
-    public void testPage(){
+    public void testPage() {
         Page<DiscussPost> page = esService.searchDiscussPost("互联网", 0, 10);
         System.out.println(page.getSize());
         System.out.println(page.getTotalPages());
         System.out.println(page.getTotalElements());
-        for(DiscussPost post : page){
+        for (DiscussPost post : page) {
             System.out.println(post);
         }
     }

@@ -39,25 +39,26 @@ public class DiscussPostService {
 
     //Caffine核心接口:Cache,LoadingCache,AsyncLoadingCache
     //帖子列表的缓存
-    private LoadingCache<String,List<DiscussPost>> postListCache;
+    private LoadingCache<String, List<DiscussPost>> postListCache;
 
     //帖子总数缓存
-    private LoadingCache<Integer,Integer> postRowsCache;
+    private LoadingCache<Integer, Integer> postRowsCache;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         //初始化列表缓存
         postListCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
                 .expireAfterWrite(expireSeconds, TimeUnit.SECONDS)
                 .build(new CacheLoader<String, List<DiscussPost>>() {
                     @Override
-                    public @Nullable List<DiscussPost> load(@NonNull String key) throws Exception {
-                        if(key == null || key.length() == 0){
+                    public @Nullable
+                    List<DiscussPost> load(@NonNull String key) throws Exception {
+                        if (key == null || key.length() == 0) {
                             throw new IllegalArgumentException("参数错误!");
                         }
                         String[] params = key.split(":");
-                        if(params == null || params.length != 2){
+                        if (params == null || params.length != 2) {
                             throw new IllegalArgumentException("参数错误!");
                         }
 
@@ -86,17 +87,17 @@ public class DiscussPostService {
     }
 
 
-    public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit,int orderMode){
+    public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit, int orderMode) {
         //order是 最热 和最新的标志
-        if(userId == 0 && orderMode == 1){
+        if (userId == 0 && orderMode == 1) {
             return postListCache.get(offset + ":" + limit);
         }
         logger.debug("load post list from DB.");
-        return discussPostMapper.selectDiscussPosts(userId,offset,limit,orderMode);
+        return discussPostMapper.selectDiscussPosts(userId, offset, limit, orderMode);
     }
 
-    public int findDiscussPostRows(int userId){
-        if(userId == 0){
+    public int findDiscussPostRows(int userId) {
+        if (userId == 0) {
             return postRowsCache.get(userId);
         }
 
@@ -104,8 +105,8 @@ public class DiscussPostService {
         return discussPostMapper.selectDiscussPostRows(userId);
     }
 
-    public int addDiscussPost(DiscussPost post){
-        if(post == null){
+    public int addDiscussPost(DiscussPost post) {
+        if (post == null) {
             throw new IllegalArgumentException("参数不能为空!");
         }
 
@@ -119,12 +120,12 @@ public class DiscussPostService {
         return discussPostMapper.insertDiscussPost(post);
     }
 
-    public DiscussPost findDiscussPostById(int id){
-        return  discussPostMapper.selectDiscussPostById(id);
+    public DiscussPost findDiscussPostById(int id) {
+        return discussPostMapper.selectDiscussPostById(id);
     }
 
-    public int updateCommentCount(int id,int commentCount){
-        return discussPostMapper.updateCommentCount(id,commentCount);
+    public int updateCommentCount(int id, int commentCount) {
+        return discussPostMapper.updateCommentCount(id, commentCount);
     }
 
     public int updateType(int id, int type) {

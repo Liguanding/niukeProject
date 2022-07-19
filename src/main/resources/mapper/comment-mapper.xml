@@ -13,7 +13,8 @@
     </sql>
 
     <select id="selectCommentsByEntity" resultType="Comment">
-        select <include refid="selectFields"></include>
+        select
+        <include refid="selectFields"></include>
         from comment
         where status = 0
         and entity_type = #{entityType}
@@ -36,7 +37,8 @@
     </insert>
 
     <select id="selectCommentById" resultType="Comment">
-        select <include refid="selectFields"></include>
+        select
+        <include refid="selectFields"></include>
         from comment
         where id = #{id}
     </select>

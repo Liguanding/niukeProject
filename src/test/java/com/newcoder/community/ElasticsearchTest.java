@@ -43,7 +43,7 @@ public class ElasticsearchTest {
     private ElasticsearchOperations elasticsearchOperations;
 
     @Test
-    public void testInsert(){
+    public void testInsert() {
 
         IndexOperations ops = elasticsearchRestTemplate.indexOps(DiscussPost.class);
         boolean exists = ops.exists();
@@ -56,7 +56,7 @@ public class ElasticsearchTest {
 
 
     @Test
-    public void testInsertList(){
+    public void testInsertList() {
 
 //        elasticsearchRestTemplate.save(discussPostMapper.selectDiscussPosts(101,0,100));
 //        elasticsearchRestTemplate.save(discussPostMapper.selectDiscussPosts(102,0,100));
@@ -68,7 +68,7 @@ public class ElasticsearchTest {
     }
 
     @Test
-    public void testUpdate(){
+    public void testUpdate() {
 
         DiscussPost post = discussPostMapper.selectDiscussPostById(111);
         post.setContent("我是新人,怎么灌水");
@@ -77,18 +77,18 @@ public class ElasticsearchTest {
     }
 
     @Test
-    public void testSearchByRepository(){
+    public void testSearchByRepository() {
 
 
         //https://www.coder.work/article/7659882
         //这边问题非常多 ElasticsearchRepository 中的所有方法均已弃用
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬","title","content"))
+                .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
                 .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))
-                .withPageable(PageRequest.of(0,10))
+                .withPageable(PageRequest.of(0, 10))
                 .withHighlightFields(
                         new HighlightBuilder.Field("title").preTags("<em>").postTags("</em>"),
                         new HighlightBuilder.Field("content").preTags("<em>").postTags("</em>")
@@ -121,8 +121,8 @@ public class ElasticsearchTest {
 
 
         SearchHits<DiscussPost> searchHits = elasticsearchRestTemplate.search(searchQuery, DiscussPost.class);
-        if(searchHits.getTotalHits() <= 0){
-            new PageImpl<>(null,searchQuery.getPageable(),0);
+        if (searchHits.getTotalHits() <= 0) {
+            new PageImpl<>(null, searchQuery.getPageable(), 0);
         }
 //        SearchPage<DiscussPost> page =  SearchHitSupport.searchPageFor(searchHits, searchQuery.getPageable());
 
@@ -130,7 +130,7 @@ public class ElasticsearchTest {
 
         System.out.println(page.getTotalElements());
         System.out.println(page.getTotalPages());
-        for(DiscussPost post : page){
+        for (DiscussPost post : page) {
 
             System.out.println(post);
         }
@@ -138,15 +138,15 @@ public class ElasticsearchTest {
     }
 
     @Test
-    public void searchAndHighLight(){
+    public void searchAndHighLight() {
 
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬","title","content"))
+                .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
                 .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))
-                .withPageable(PageRequest.of(0,10))
+                .withPageable(PageRequest.of(0, 10))
                 .withHighlightFields(
                         new HighlightBuilder.Field("title").preTags("<em>").postTags("</em>"),
                         new HighlightBuilder.Field("content").preTags("<em>").postTags("</em>")
@@ -155,14 +155,12 @@ public class ElasticsearchTest {
         SearchHits<DiscussPost> searchHits = elasticsearchRestTemplate.search(searchQuery, DiscussPost.class);
         List<SearchHit<DiscussPost>> searchHits1 = searchHits.getSearchHits();
 
-        for(SearchHit post : searchHits1){
+        for (SearchHit post : searchHits1) {
             List<String> title = post.getHighlightField("title");
             System.out.println(post.getContent());
         }
 
     }
-
-
 
 
 }

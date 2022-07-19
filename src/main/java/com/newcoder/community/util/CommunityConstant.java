@@ -53,7 +53,7 @@ public interface CommunityConstant {
     String TOPIC_LIKE = "like";
     /**
      * 主题:关注
-      */
+     */
     String TOPIC_FOLLOW = "follow";
 
     /**
